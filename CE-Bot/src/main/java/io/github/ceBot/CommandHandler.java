@@ -16,7 +16,12 @@ import javax.imageio.ImageIO;
 import org.omg.CORBA.portable.InputStream;
 
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.audio.IAudioManager;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+
+import sx.blah.discord.handle.impl.obj.Guild;
+
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.Image;
@@ -68,6 +73,7 @@ public class CommandHandler {
         	
         });
         
+
     	// alter image
     	commandMap.put("cname", (event, args) -> {
     		MainRunner.sendMessage(event.getChannel(), "Changing Name");
@@ -79,7 +85,10 @@ public class CommandHandler {
     		MainRunner.sendMessage(event.getChannel(), defg.getName());
     	});
         
+
+
     	// alter image
+
     	commandMap.put("alterpic", (event, args) -> {
 			String imstring = args.get(0).toString();
         	//MainRunner.sendMessage(event.getChannel(), imstring);
@@ -95,8 +104,18 @@ public class CommandHandler {
 				Main.bot.changeAvatar(myimage);
     		}
     	});
-    	commandMap.put("shutdown", (event, args) -> {
+    	commandMap.put("cname", (event, args) -> {
+    		MainRunner.sendMessage(event.getChannel(), "Changing Name");
+    		Main.bot.changeUsername(args.get(0));
+    	});
+    	
+    	commandMap.put("getGuild", (event, args) -> {
+    		IGuild defg = event.getGuild();
+    		MainRunner.sendMessage(event.getChannel(), defg.getName());
 
+    	});
+    	commandMap.put("shutdown", (event, args) -> {
+    		
         	Timer timer = new Timer();
 
     		IUser sender = event.getMessage().getAuthor();
