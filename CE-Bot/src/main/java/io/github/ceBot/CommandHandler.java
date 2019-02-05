@@ -11,7 +11,10 @@ import java.util.*;
 import javax.imageio.ImageIO;
 
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.audio.IAudioManager;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.obj.Guild;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.Image;
 
@@ -33,26 +36,46 @@ public class CommandHandler {
         	MainRunner.sendMessage(event.getChannel(), "Pong!");;
         });
         
+        commandMap.put("calc", (event, args) -> {
+        	double n1,n2;
+        	char z;
+        	n1= Double.valueOf(args.get(0));
+        	z= args.get(1).charAt(0);
+        	n2= Double.valueOf(args.get(2));
+        	double f = 0;
+        	
+        	switch(z) // switch is on operand // display answer as equaton
+            {
+                case '+': f = n1+n2; // if + is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1+n2));
+                break; // breaks switch                 
+                case '-': f = n1-n2; // if - is used
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1-n2));
+                break; // breaks switch                
+                case '*': f = n1*n2; // if * is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1*n2));
+                break; // breaks switch                
+                case '/': f = n1/n2; // if / is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1/n2));
+                break; // breaks switch 
+                //error message 
+                default: System.out.println("ERROR! INVALID OPERAND");
+            }
+        	
+        });
+        
     	// alter image
-    	commandMap.put("alterpic", (event, args) -> {
-    		try {
-			String imstring = args.get(1);
-        	MainRunner.sendMessage(event.getChannel(), imstring);
-
-			URL imurl = new URL(imstring);
-			BufferedImage img = ImageIO.read(imurl);
-			File f = new File("temp");
-			ImageIO.write(img, "", f);
-			Image im = (Image) ImageIO.read(f);
-			Main.bot.changeAvatar(im);
-    		}
-			 catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    	commandMap.put("cname", (event, args) -> {
+    		MainRunner.sendMessage(event.getChannel(), "Changing Name");
+    		Main.bot.changeUsername(args.get(0));
+    	});
+    	
+    	commandMap.put("getGuild", (event, args) -> {
+    		IGuild defg = event.getGuild();
+    		MainRunner.sendMessage(event.getChannel(), defg.getName());
     	});
     	commandMap.put("shutdown", (event, args) -> {
-
+    		
         	Timer timer = new Timer();
 
     		IUser sender = event.getMessage().getAuthor();
