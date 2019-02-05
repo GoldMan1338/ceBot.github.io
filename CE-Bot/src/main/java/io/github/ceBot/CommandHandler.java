@@ -4,16 +4,23 @@ package io.github.ceBot;
 // import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 
 import javax.imageio.ImageIO;
 
+import org.omg.CORBA.portable.InputStream;
+
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.Image;
+import sx.blah.discord.util.*;
 
 
 public class CommandHandler {
@@ -33,23 +40,59 @@ public class CommandHandler {
         	MainRunner.sendMessage(event.getChannel(), "Pong!");;
         });
         
+        commandMap.put("calc", (event, args) -> {
+        	double n1,n2;
+        	char z;
+        	n1= Double.valueOf(args.get(0));
+        	z= args.get(1).charAt(0);
+        	n2= Double.valueOf(args.get(2));
+        	double f = 0;
+        	
+        	switch(z) // switch is on operand // display answer as equaton
+            {
+                case '+': f = n1+n2; // if + is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1+n2));
+                break; // breaks switch                 
+                case '-': f = n1-n2; // if - is used
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1-n2));
+                break; // breaks switch                
+                case '*': f = n1*n2; // if * is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1*n2));
+                break; // breaks switch                
+                case '/': f = n1/n2; // if / is used ' ' used for values
+        		MainRunner.sendMessage(event.getChannel(), String.valueOf(n1/n2));
+                break; // breaks switch 
+                //error message 
+                default: System.out.println("ERROR! INVALID OPERAND");
+            }
+        	
+        });
+        
+    	// alter image
+    	commandMap.put("cname", (event, args) -> {
+    		MainRunner.sendMessage(event.getChannel(), "Changing Name");
+    		Main.bot.changeUsername(args.get(0));
+    	});
+    	
+    	commandMap.put("getGuild", (event, args) -> {
+    		IGuild defg = event.getGuild();
+    		MainRunner.sendMessage(event.getChannel(), defg.getName());
+    	});
+        
     	// alter image
     	commandMap.put("alterpic", (event, args) -> {
 			String imstring = args.get(0).toString();
-        	MainRunner.sendMessage(event.getChannel(), imstring);
+        	//MainRunner.sendMessage(event.getChannel(), imstring);
+			//File f = new File("temp");
+			
         	if(event.getAuthor().getStringID().contains(Main.BOT_OWNER[0]) || event.getAuthor().getStringID().contains(Main.BOT_OWNER[1])){
-    			try {
-    				URL imurl = new URL(imstring);
-    				BufferedImage img = ImageIO.read(imurl);
-    				File f = new File("temp");
-    				ImageIO.write(img, "", f);
-    				Image im = (Image) ImageIO.read(f);
-    				Main.bot.changeAvatar(im);
-    			}
-    				catch (IOException e) {
-				 	// TODO Auto-generated catch block
-				 	e.printStackTrace();
-			 	}
+    			Image myimage = Image.forUrl("png", imstring);
+				//URL imurl = new URL(imstring);
+				//BufferedImage img = ImageIO.read(imurl);
+				//ImageIO.write(img, "", f);
+				//Image im = (Image) ImageIO.read(f);
+				//image = ImageIO.read(ssaveImage());
+				Main.bot.changeAvatar(myimage);
     		}
     	});
     	commandMap.put("shutdown", (event, args) -> {
@@ -94,12 +137,6 @@ public class CommandHandler {
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event){
     	
-		IUser sender = event.getMessage().getAuthor();
-		String messageAuthor = sender.toString();
-		
-		
-    	
-
         // Note for error handling, you'll probably want to log failed commands with a logger or sout
         // In most cases it's not advised to annoy the user with a reply incase they didn't intend to trigger a
         // command anyway, such as a user typing ?notacommand, the bot should not say "notacommand" doesn't exist in
@@ -129,6 +166,28 @@ public class CommandHandler {
             commandMap.get(commandStr).runCommand(event, argsList);
 
     }
+    //if you ever want to use this you can, if not you can get rid of it
+    /*public static Image saveImage(String imageUrl) throws ClassCastException, IOException {
+        URL url = new URL(imageUrl);
+        String fileName = url.getFile();
+        String destName = "./figures" + fileName.substring(fileName.lastIndexOf("/"));
+        System.out.println(destName);
+     
+        InputStream is = (InputStream) url.openStream();
+        OutputStream os = new FileOutputStream(destName);
+        File im = new File(destName);
+     
+        byte[] b = new byte[2048];
+        int length;
+     
+        while ((length = is.read(b)) != -1) {
+            os.write(b, 0, length);
+        }
+        Image image = (Image) ImageIO.read(im);
+        is.close();
+        os.close();
+        return image;
+    }*/
     
 
 }
