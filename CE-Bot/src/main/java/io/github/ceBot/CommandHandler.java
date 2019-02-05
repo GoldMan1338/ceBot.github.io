@@ -65,6 +65,7 @@ public class CommandHandler {
         });
         
     	// alter image
+<<<<<<< HEAD
     	commandMap.put("cname", (event, args) -> {
     		MainRunner.sendMessage(event.getChannel(), "Changing Name");
     		Main.bot.changeUsername(args.get(0));
@@ -73,6 +74,25 @@ public class CommandHandler {
     	commandMap.put("getGuild", (event, args) -> {
     		IGuild defg = event.getGuild();
     		MainRunner.sendMessage(event.getChannel(), defg.getName());
+=======
+    	commandMap.put("alterpic", (event, args) -> {
+			String imstring = args.get(0).toString();
+        	MainRunner.sendMessage(event.getChannel(), imstring);
+        	if(event.getAuthor().getStringID().contains(Main.BOT_OWNER[0]) || event.getAuthor().getStringID().contains(Main.BOT_OWNER[1])){
+    			try {
+    				URL imurl = new URL(imstring);
+    				BufferedImage img = ImageIO.read(imurl);
+    				File f = new File("temp");
+    				ImageIO.write(img, "", f);
+    				Image im = (Image) ImageIO.read(f);
+    				Main.bot.changeAvatar(im);
+    			}
+    				catch (IOException e) {
+				 	// TODO Auto-generated catch block
+				 	e.printStackTrace();
+			 	}
+    		}
+>>>>>>> branch 'master' of https://github.com/GoldMan1338/ceBot.github.io
     	});
     	commandMap.put("shutdown", (event, args) -> {
     		
