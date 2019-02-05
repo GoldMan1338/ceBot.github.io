@@ -35,16 +35,15 @@ public class CommandHandler {
         
     	// alter image
     	commandMap.put("alterpic", (event, args) -> {
-    		try {
-			String imstring = args.get(1);
+			String imstring = args.get(0).toString();
         	MainRunner.sendMessage(event.getChannel(), imstring);
-
-			URL imurl = new URL(imstring);
-			BufferedImage img = ImageIO.read(imurl);
-			File f = new File("temp");
-			ImageIO.write(img, "", f);
-			Image im = (Image) ImageIO.read(f);
-			Main.bot.changeAvatar(im);
+    		try {
+    			URL imurl = new URL(imstring);
+    			BufferedImage img = ImageIO.read(imurl);
+    			File f = new File("temp");
+    			ImageIO.write(img, "", f);
+    			Image im = (Image) ImageIO.read(f);
+    			Main.bot.changeAvatar(im);
     		}
 			 catch (IOException e) {
 				// TODO Auto-generated catch block
