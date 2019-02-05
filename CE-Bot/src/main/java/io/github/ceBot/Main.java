@@ -8,8 +8,9 @@ public class Main {
 	
 	public static void main(String[] event) {
 		//add more of these if you make new classes
-		//import the location of said classes too
+		//import the location of said classes too (ONLY IF IN OTHER PACKAGES)
 		bot.getDispatcher().registerListener(new MainRunner());
+		bot.getDispatcher().registerListener(new CommandHandler());
 		bot.checkLoggedIn(null);
 		
 	}
