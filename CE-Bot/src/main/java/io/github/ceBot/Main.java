@@ -15,7 +15,7 @@ public class Main {
 		
 	}
 	
-	public static final String BOT_PREFIX = ">>";
+	public static final String BOT_PREFIX = ">";
 	
 	public static String[] BOT_OWNER = {"139541886888181760","422588424487174144"};
 	
