@@ -28,34 +28,35 @@ import sx.blah.discord.util.Image;
 import sx.blah.discord.util.*;
 
 
+
 public class CommandHandler {
-	
-	public static String BOT_PREFIX = ">";
-	
-	private static Map<String, Command> commandMap = new HashMap<>();
-	
+	//public static String BOT_PREFIX = ">";
+	//public static Map<String, Command> commandMap = new HashMap<>();
     // Statically populate the commandMap with the intended functionality
     static {
     	//"testcommand" for what the user enters, follow up with desired actions
-        commandMap.put("testcommand", (event, args) -> {
+        GetMessageCommand.commandMap.put("testcommand", (event, args) -> {
             MainRunner.sendMessage(event.getChannel(), "You ran the test command with args: " + args);
         });
         
-        commandMap.put("ping", (event, args) -> {
-        	MainRunner.sendMessage(event.getChannel(), "Pong!");;
+        GetMessageCommand.commandMap.put("ping", (event, args) -> {
+        	MainRunner.sendMessage(event.getChannel(), "Pong!");
         });
         
-        commandMap.put("sendmessage", (event, args) -> {
-        	String channelidstring = args.get(0);
-        	int finalarg = args.size() - 1;
-        	String message = args.toString().substring(1, finalarg);
-        	Long channelidlong = Long.parseLong(channelidstring);
+        GetMessageCommand.commandMap.put("sendmessage", (event, args) -> {
+        	if(GetOwners.getOwners(event)){
+        		String channelidstring = args.get(0);
+        		int finalarg = args.size() - 1;
+        		String message = args.toString().substring(1, finalarg);
+        		Long channelidlong = Long.parseLong(channelidstring);
+        		
         	
-        	MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
-        	//MainRunner.sendMessage(event.getChannel(), message + channelidlong);
+        		MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
+        		//MainRunner.sendMessage(event.getChannel(), message + channelidlong);
+        	}
         });
         
-        commandMap.put("calc", (event, args) -> {
+        GetMessageCommand.commandMap.put("calc", (event, args) -> {
         	double n1,n2;
         	char z;
         	n1= Double.valueOf(args.get(0));
@@ -86,12 +87,12 @@ public class CommandHandler {
 
     	// Changes Bot PFP, only bot owners can use
 
-    	commandMap.put("alterpic", (event, args) -> {
+        GetMessageCommand.commandMap.put("alterpic", (event, args) -> {
 			String imstring = args.get(0).toString();
         	//MainRunner.sendMessage(event.getChannel(), imstring);
 			//File f = new File("temp");
 			
-        	if(event.getAuthor().getStringID().contains(Main.BOT_OWNER[0]) || event.getAuthor().getStringID().contains(Main.BOT_OWNER[1])){
+        	if(GetOwners.getOwners(event)){
     			Image myimage = Image.forUrl("png", imstring);
 				//URL imurl = new URL(imstring);
 				//BufferedImage img = ImageIO.read(imurl);
@@ -101,20 +102,21 @@ public class CommandHandler {
 				Main.bot.changeAvatar(myimage);
     		}
     	});
-    	commandMap.put("cname", (event, args) -> {
-    		MainRunner.sendMessage(event.getChannel(), "Changing Name");
-    		Main.bot.changeUsername(args.get(0));
+        GetMessageCommand.commandMap.put("cname", (event, args) -> {
+    		if(GetOwners.getOwners(event)){
+    			MainRunner.sendMessage(event.getChannel(), "Changing Name");
+    			Main.bot.changeUsername(args.get(0));
+    		}
     	});
     	
-    	commandMap.put("getGuild", (event, args) -> {
+        GetMessageCommand.commandMap.put("getGuild", (event, args) -> {
     		IGuild defg = event.getGuild();
     		MainRunner.sendMessage(event.getChannel(), defg.getName());
 
     	});
-    	commandMap.put("shutdown", (event, args) -> {
+        GetMessageCommand.commandMap.put("shutdown", (event, args) -> {
         	Timer timer = new Timer();
-    		IUser sender = event.getMessage().getAuthor();
-			if(sender.getStringID().contains(Main.BOT_OWNER[0]) || sender.getStringID().contains(Main.BOT_OWNER[1])){
+			if(GetOwners.getOwners(event)){
 				timer.schedule(new TimerTask() {
 	            	@Override
 	            	public void run() {
@@ -127,9 +129,9 @@ public class CommandHandler {
 			else {
 				MainRunner.sendMessage(event.getChannel(), "Invalid Permissions");
 			}				
-        }); 	   	    	
+        });
     }
-    @EventSubscriber
+    /*@EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event){
     	
         // Note for error handling, you'll probably want to log failed commands with a logger or sout
@@ -160,7 +162,8 @@ public class CommandHandler {
         if(commandMap.containsKey(commandStr))
             commandMap.get(commandStr).runCommand(event, argsList);
 
-    }
+    }*/
+    
     //if you ever want to use this you can, if not you can get rid of it
     /*public static Image saveImage(String imageUrl) throws ClassCastException, IOException {
         URL url = new URL(imageUrl);
