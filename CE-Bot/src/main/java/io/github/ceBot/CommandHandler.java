@@ -84,19 +84,6 @@ public class CommandHandler {
         });
         
 
-    	// alter image
-    	commandMap.put("cname", (event, args) -> {
-    		MainRunner.sendMessage(event.getChannel(), "Changing Name");
-    		Main.bot.changeUsername(args.get(0));
-    	});
-    	
-    	commandMap.put("getGuild", (event, args) -> {
-    		IGuild defg = event.getGuild();
-    		MainRunner.sendMessage(event.getChannel(), defg.getName());
-    	});
-        
-
-
     	// Changes Bot PFP, only bot owners can use
 
     	commandMap.put("alterpic", (event, args) -> {
