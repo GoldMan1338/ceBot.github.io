@@ -23,7 +23,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.impl.obj.Guild;
 
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.Image;
 import sx.blah.discord.util.*;
 
@@ -43,6 +43,16 @@ public class CommandHandler {
         
         commandMap.put("ping", (event, args) -> {
         	MainRunner.sendMessage(event.getChannel(), "Pong!");;
+        });
+        
+        commandMap.put("sendmessage", (event, args) -> {
+        	String channelidstring = args.get(0);
+        	int finalarg = args.size() - 1;
+        	String message = args.toString().substring(1, finalarg);
+        	Long channelidlong = Long.parseLong(channelidstring);
+        	
+        	MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
+        	//MainRunner.sendMessage(event.getChannel(), message + channelidlong);
         });
         
         commandMap.put("calc", (event, args) -> {
@@ -87,7 +97,7 @@ public class CommandHandler {
         
 
 
-    	// alter image
+    	// Changes Bot PFP, only bot owners can use
 
     	commandMap.put("alterpic", (event, args) -> {
 			String imstring = args.get(0).toString();
@@ -115,43 +125,22 @@ public class CommandHandler {
 
     	});
     	commandMap.put("shutdown", (event, args) -> {
-    		
         	Timer timer = new Timer();
-
     		IUser sender = event.getMessage().getAuthor();
-
 			if(sender.getStringID().contains(Main.BOT_OWNER[0]) || sender.getStringID().contains(Main.BOT_OWNER[1])){
-
 				timer.schedule(new TimerTask() {
-
 	            	@Override
-
 	            	public void run() {
-
 	            		Main.bot.logout();
-
 	            		System.exit(0);
-
 	            	}
-
 	            }, 2*1000);
-
 				MainRunner.sendMessage(event.getChannel(), "Ceasing to exist");
-
 			}
-
 			else {
-
 				MainRunner.sendMessage(event.getChannel(), "Invalid Permissions");
-
-			}
-
-			
-
-        });
-    	
-    	
-    	
+			}				
+        }); 	   	    	
     }
     @EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event){
