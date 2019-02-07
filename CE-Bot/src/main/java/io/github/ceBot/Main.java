@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 
 public class Main {
@@ -16,12 +17,19 @@ public class Main {
 		bot.getDispatcher().registerListener(new MainRunner());
 		bot.getDispatcher().registerListener(new CommandHandler());
 		bot.getDispatcher().registerListener(new GetMessageCommand());
-		bot.checkLoggedIn(null);
+		bot.getDispatcher().registerListener(new OnLogin());
+		//OnLogin.GetBotGuilds();
+		//OnLogin.main(BOT_GUILDS);
+
 		
+		
+		System.out.println(BOT_CHANNELS.toString());
+		
+	
 		
 		
 	}
-	public static List<IGuild> BOT_GUILDS = bot.getGuilds();
+	public static IGuild BOT_CHANNELS = bot.getGuildByID(0);
 	
 	public static final String BOT_PREFIX = ">";
 	

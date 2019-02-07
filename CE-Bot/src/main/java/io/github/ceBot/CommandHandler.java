@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import org.omg.CORBA.portable.InputStream;
 
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.audio.IAudioManager;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -112,6 +113,24 @@ public class CommandHandler {
         GetMessageCommand.commandMap.put("getGuild", (event, args) -> {
     		IGuild defg = event.getGuild();
     		MainRunner.sendMessage(event.getChannel(), defg.getName());
+
+    	});
+        GetMessageCommand.commandMap.put("getGuilds", (event, args) -> {
+        	/*This should grab the names of all guilds the bot is present in
+        	 *and send it to the requested channel. Currently does not work.
+        	 */
+    		List<IGuild> guildlist = Main.bot.getGuilds();
+    		String[] guilds = guildlist.toString().split("\n");
+    		MainRunner.sendMessage(event.getChannel(), guilds.toString());
+    		
+    		String channelidstring = args.get(0);
+    		int finalarg = args.size() - 1;
+    		String message = args.toString().substring(1, finalarg);
+    		Long channelidlong = Long.parseLong(channelidstring);
+    		
+    		
+    	
+    		MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
 
     	});
         GetMessageCommand.commandMap.put("shutdown", (event, args) -> {
