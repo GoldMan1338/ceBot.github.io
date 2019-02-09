@@ -32,8 +32,21 @@ public class Main {
     		.flatMap(Message::getChannel)
     		.flatMap(channel -> channel.createMessage("Pong!"))
     		.subscribe();
-		
+		//this is to make sure that we can always turn it off
+		client.getEventDispatcher().on(MessageCreateEvent.class)
+		.map(MessageCreateEvent::getMessage)
+		.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
+		.filter(message -> message.getAuthorId().toString().equals(Main.BOT_OWNER))
+		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>shutdown"))
+		.flatMap(Message::getChannel)
+		.flatMap(channel -> channel.createMessage("Ceasing to exist"))
+		.doOnNext(client -> client.getClient().logout())
+		.subscribe();
+		//Goes without saying, these are the methods from other files.
+		//All new methods that are commands must be made as interfaces with static voids
+		//You can look into the v3 commmand module on the github if you want, just teach me b0ss
 		Shutdown.shutdown();
+		CommandHandler.handler();
 		
 		
 		
