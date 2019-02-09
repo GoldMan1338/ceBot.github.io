@@ -1,35 +1,45 @@
 package io.github.ceBot;
 
-import java.util.List;
-import java.util.Scanner;
 
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+
+import io.github.ceBot.*;
 
 public class Main {
 	
-	public static final IDiscordClient bot = MainRunner.createClient("NTQyMTM3NDM1NjgxNzE4Mjcz.Dzp-hA.sSAi0DTA9rcprC3VKTLKHxLHdAU", true);
+	public final static DiscordClientBuilder builder = new DiscordClientBuilder("NTQyMTM3NDM1NjgxNzE4Mjcz.Dzp-hA.sSAi0DTA9rcprC3VKTLKHxLHdAU");
+	public final static DiscordClient client = builder.build();
 	
-	public static void main(String[] event) {
-		//add more of these if you make new classes
-		//import the location of said classes too (ONLY IF IN OTHER PACKAGES)
-		bot.getDispatcher().registerListener(new MainRunner());
-		bot.getDispatcher().registerListener(new CommandHandler());
-		bot.getDispatcher().registerListener(new GetMessageCommand());
-		bot.getDispatcher().registerListener(new OnLogin());
-		//OnLogin.GetBotGuilds();
-		//OnLogin.main(BOT_GUILDS);
+	public static void main(String[] args) throws ClassNotFoundException {
+		
+		
+		client.getEventDispatcher().on(ReadyEvent.class)
+			.subscribe(event -> {
+        		User self = event.getSelf();
+          		System.out.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
+        	});
 
 		
+		client.getEventDispatcher().on(MessageCreateEvent.class)
+    		.map(MessageCreateEvent::getMessage)
+    		.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
+    		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">ping"))
+    		.flatMap(Message::getChannel)
+    		.flatMap(channel -> channel.createMessage("Pong!"))
+    		.subscribe();
 		
-		System.out.println(BOT_CHANNELS.toString());
-		
-	
+		Shutdown.shutdown();
 		
 		
+		
+		
+		client.login().block();
 	}
-	public static IGuild BOT_CHANNELS = bot.getGuildByID(0);
 	
 	public static final String BOT_PREFIX = ">";
 	

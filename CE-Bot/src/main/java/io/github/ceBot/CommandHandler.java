@@ -15,36 +15,41 @@ import javax.imageio.ImageIO;
 
 import org.omg.CORBA.portable.InputStream;
 
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.audio.IAudioManager;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-
-
-import sx.blah.discord.handle.impl.obj.Guild;
-
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.Image;
-import sx.blah.discord.util.*;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
 
 
 
-public class CommandHandler {
+interface CommandHandler {
 	//public static String BOT_PREFIX = ">";
 	//public static Map<String, Command> commandMap = new HashMap<>();
     // Statically populate the commandMap with the intended functionality
-    static {
+    
     	//"testcommand" for what the user enters, follow up with desired actions
-        GetMessageCommand.commandMap.put("testcommand", (event, args) -> {
+        /*GetMessageCommand.commandMap.put("testcommand", (event, args) -> {
             MainRunner.sendMessage(event.getChannel(), "You ran the test command with args: " + args);
-        });
+        });*/
+    static void handler() {
+        Main.client.getEventDispatcher().on(MessageCreateEvent.class)
+        	.map(MessageCreateEvent::getMessage)
+        	.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
+        	.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>ping"))
+        	.flatMap(Message::getChannel)
+        	.flatMap(channel -> channel.createMessage("Pong!"))
+        	.subscribe();
+        //fix this
         
-        GetMessageCommand.commandMap.put("ping", (event, args) -> {
-        	MainRunner.sendMessage(event.getChannel(), "Pong!");
-        });
-        
-        GetMessageCommand.commandMap.put("sendmessage", (event, args) -> {
+			
+    	Main.client.getEventDispatcher().on(MessageCreateEvent.class)
+    		.map(MessageCreateEvent::getMessage)
+    		.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
+    		.filter(message -> message.getAuthorId().toString().equals(Main.BOT_OWNER))
+    		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>yeet"))
+    		.flatMap(Message::getChannel)
+    		.flatMap(channel -> channel.createMessage("boi"))
+    		.subscribe();
+    
+        /*GetMessageCommand.commandMap.put("sendmessage", (event, args) -> {
         	if(GetOwners.getOwners(event)){
         		String channelidstring = args.get(0);
         		int finalarg = args.size() - 1;
@@ -55,9 +60,9 @@ public class CommandHandler {
         		MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
         		//MainRunner.sendMessage(event.getChannel(), message + channelidlong);
         	}
-        });
+        });*/
         
-        GetMessageCommand.commandMap.put("calc", (event, args) -> {
+		/*GetMessageCommand.commandMap.put("calc", (event, args) -> {
         	double n1,n2;
         	char z;
         	n1= Double.valueOf(args.get(0));
@@ -83,12 +88,13 @@ public class CommandHandler {
                 default: System.out.println("ERROR! INVALID OPERAND");
             }
         	
-        });
+        });*/
+		
         
 
     	// Changes Bot PFP, only bot owners can use
 
-        GetMessageCommand.commandMap.put("alterpic", (event, args) -> {
+        /*GetMessageCommand.commandMap.put("alterpic", (event, args) -> {
 			String imstring = args.get(0).toString();
         	//MainRunner.sendMessage(event.getChannel(), imstring);
 			//File f = new File("temp");
@@ -102,23 +108,25 @@ public class CommandHandler {
 				//image = ImageIO.read(ssaveImage());
 				Main.bot.changeAvatar(myimage);
     		}
-    	});
-        GetMessageCommand.commandMap.put("cname", (event, args) -> {
+    	});*/
+        
+		/*GetMessageCommand.commandMap.put("cname", (event, args) -> {
     		if(GetOwners.getOwners(event)){
     			MainRunner.sendMessage(event.getChannel(), "Changing Name");
     			Main.bot.changeUsername(args.get(0));
     		}
-    	});
-    	
-        GetMessageCommand.commandMap.put("getGuild", (event, args) -> {
+    	});*/
+        
+		/*GetMessageCommand.commandMap.put("getGuild", (event, args) -> {
     		IGuild defg = event.getGuild();
     		MainRunner.sendMessage(event.getChannel(), defg.getName());
 
-    	});
-        GetMessageCommand.commandMap.put("getGuilds", (event, args) -> {
-        	/*This should grab the names of all guilds the bot is present in
-        	 *and send it to the requested channel. Currently does not work.
-        	 */
+    	});*/
+        
+		/*GetMessageCommand.commandMap.put("getGuilds", (event, args) -> {
+        	//This should grab the names of all guilds the bot is present in
+        	//and send it to the requested channel. Currently does not work.
+        	 
     		List<IGuild> guildlist = Main.bot.getGuilds();
     		String[] guilds = guildlist.toString().split("\n");
     		MainRunner.sendMessage(event.getChannel(), guilds.toString());
@@ -132,23 +140,9 @@ public class CommandHandler {
     	
     		MainRunner.sendMessage(event.getGuild().getChannelByID(channelidlong), message);
 
-    	});
-        GetMessageCommand.commandMap.put("shutdown", (event, args) -> {
-        	Timer timer = new Timer();
-			if(GetOwners.getOwners(event)){
-				timer.schedule(new TimerTask() {
-	            	@Override
-	            	public void run() {
-	            		Main.bot.logout();
-	            		System.exit(0);
-	            	}
-	            }, 2*1000);
-				MainRunner.sendMessage(event.getChannel(), "Ceasing to exist");
-			}
-			else {
-				MainRunner.sendMessage(event.getChannel(), "Invalid Permissions");
-			}				
-        });
+    	});*/
+        
+        
     }
     /*@EventSubscriber
     public void onMessageReceived(MessageReceivedEvent event){
