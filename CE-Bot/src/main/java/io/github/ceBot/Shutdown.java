@@ -11,8 +11,8 @@ public interface Shutdown {
 	
 	Main.client.getEventDispatcher().on(MessageCreateEvent.class)
 	.map(MessageCreateEvent::getMessage)
-	.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
-	.filter(message -> message.getAuthorId().toString().equals(Main.BOT_OWNER))
+	.filterWhen(message -> message.getAuthorAsMember().map(user -> !user.isBot()))
+	.filter(message -> message.getAuthor().toString().split(" ").equals(Main.BOT_OWNER))
 	.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>shutdown"))
 	.flatMap(Message::getChannel)
 	.flatMap(channel -> channel.createMessage("Ceasing to exist"))
