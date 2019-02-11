@@ -17,6 +17,8 @@ import org.omg.CORBA.portable.InputStream;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 
 
 
@@ -32,8 +34,8 @@ interface CommandHandler {
     static void handler() {
         Main.client.getEventDispatcher().on(MessageCreateEvent.class)
         	.map(MessageCreateEvent::getMessage)
-        	.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
-        	.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>ping"))
+        	.filterWhen(message -> message.getAuthorAsMember().map(user -> !user.isBot()))
+        	.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">ping"))
         	.flatMap(Message::getChannel)
         	.flatMap(channel -> channel.createMessage("Pong!"))
         	.subscribe();
@@ -42,9 +44,9 @@ interface CommandHandler {
 			
     	Main.client.getEventDispatcher().on(MessageCreateEvent.class)
     		.map(MessageCreateEvent::getMessage)
-    		.filterWhen(message -> message.getAuthor().map(user -> !user.isBot()))
-    		.filter(message -> message.getAuthorId().toString().equals(Main.BOT_OWNER))
-    		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>yeet"))
+    		.filterWhen(message -> message.getAuthorAsMember().map(user -> !user.isBot()))
+    		.filter(event -> Main.ownerIds.contains(event.getAuthor().map(User::getId).map(Snowflake::asLong).orElse(0l)))
+    		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">yeet"))
     		.flatMap(Message::getChannel)
     		.flatMap(channel -> channel.createMessage("boi"))
     		.subscribe();
