@@ -1,9 +1,25 @@
 package io.github.ceBot;
 
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -11,55 +27,63 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.presence.Activity;
+import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
 import io.github.ceBot.*;
-
+import io.github.ceBot.BotYoutube;
+import reactor.core.publisher.Mono;
+@SpringBootApplication
 public class Main {
 	
-	public final static DiscordClientBuilder builder = new DiscordClientBuilder("NTQyMTM3NDM1NjgxNzE4Mjcz.Dzp-hA.sSAi0DTA9rcprC3VKTLKHxLHdAU");
-	public final static DiscordClient client = builder.build();
-	
-	public static void main(String[] args) throws ClassNotFoundException {
-		
-		
-		client.getEventDispatcher().on(ReadyEvent.class)
-			.subscribe(event -> {
-        		User self = event.getSelf();
-          		System.out.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
-        	});
 
-		
-		client.getEventDispatcher().on(MessageCreateEvent.class)
-    		.map(MessageCreateEvent::getMessage)
-    		.filterWhen(message -> message.getAuthorAsMember().map(user -> !user.isBot()))
-    		.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>ping"))
-    		.flatMap(Message::getChannel)
-    		.flatMap(channel -> channel.createMessage("Pong!"))
-    		.subscribe();
-		//this is to make sure that we can always turn it off
-		client.getEventDispatcher().on(MessageCreateEvent.class)
-			.map(MessageCreateEvent::getMessage)
-			.filterWhen(message -> message.getAuthorAsMember().map(user -> !user.isBot()))
-			.filter(event -> ownerIds.contains(event.getAuthor().map(User::getId).map(Snowflake::asLong).orElse(0l)))
-			.filter(message -> message.getContent().orElse("").equalsIgnoreCase(">>shutdown"))
-			.flatMap(Message::getChannel)
-			.flatMap(channel -> channel.createMessage("Ceasing to exist"))
-			.doOnNext(client -> client.getClient().logout())
-			.subscribe();
-		//Goes without saying, these are the methods from other files.
-		//All new methods that are commands must be made as interfaces with static voids
-		//You can look into the v3 commmand module on the github if you want, just teach me b0ss
-		Shutdown.shutdown();
-		CommandHandler.handler();
-		
-		
-		
-		
-		
-		client.login().block();
-	}
+public static void main(String[] args){
+    SpringApplication.run(Main.class, args);
+    BotConfig.login().block();
+    
+}
 	
-	public static final String BOT_PREFIX = ">";
+
+public static void schedule(DiscordClient client) {
+	BotYoutube.schedule(client);
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    boolean heroku = System.getenv().containsKey("HEROKU");
+    if (heroku && System.getenv("HEROKU").equalsIgnoreCase("true")) {
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                HttpsURLConnection connection = (HttpsURLConnection) new URL(System.getenv("URL")).openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                connection.getResponseCode();
+                connection.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, 0, 10, TimeUnit.MINUTES);
+    }
+}
+
+    public static long getFirstOnline() {
+        return firstOnline;
+    }
+
+    static void setFirstOnline(long millis) {
+        firstOnline = millis;
+    }
+
+    public static String getPrefix(DiscordClient client, Snowflake guildId) {
+        //TODO add support for changing prefix later
+        if (System.getenv().containsKey("PREFIX")) return System.getenv("PREFIX");
+        return ",";
+    }
+	
+	public static final ObjectMapper mapper = new ObjectMapper();
+	
+	private static long firstOnline;
+	
+	public static final long START_CHANNEL = 489194048519667723L;
+	
+	//public static final String PREFIX = ">";
 	
 	public static String[] BOT_OWNER = {"139541886888181760","422588424487174144","195621535703105536"};
 	
