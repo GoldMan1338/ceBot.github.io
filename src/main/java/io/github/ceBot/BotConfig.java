@@ -57,6 +57,7 @@ public class BotConfig {
                         .doOnNext(client -> {
                             if (registerEvents) registerEvents(client);
                         })
+                        
                 );
 	}
 	

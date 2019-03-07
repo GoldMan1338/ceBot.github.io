@@ -23,7 +23,7 @@ public class BotEvents {
 	private static Set<Command> commands = new HashSet<>();
 	private BotEvents() {}
 	static {
-        Reflections reflections = new Reflections(EventListener.class.getPackage().getName());
+        Reflections reflections = new Reflections(BotEvents.class.getPackage().getName());
         Set<Class<? extends Command>> set = reflections.getSubTypesOf(Command.class);
         for (Class<? extends Command> cless : set) {
             try {
