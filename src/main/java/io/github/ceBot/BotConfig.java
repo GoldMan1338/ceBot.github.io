@@ -24,6 +24,7 @@ import discord4j.rest.http.client.DiscordWebClient;
 import discord4j.rest.json.response.GatewayResponse;
 import discord4j.rest.request.DefaultRouter;
 import discord4j.rest.request.Router;
+import discord4j.rest.route.Routes;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -89,21 +90,19 @@ public class BotConfig {
     private static Mono<Integer> getShardCount(String token) {
     	final ObjectMapper mapper = new ObjectMapper()
     	        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-    	        .addHandler(new UnknownPropertyHandler(true))
+    	        .addHandler(new UnknownPropertyHandler(false))
     	        .registerModules(new PossibleModule(), new Jdk8Module());
 
     	HttpHeaders defaultHeaders = new DefaultHttpHeaders();
         defaultHeaders.add(HttpHeaderNames.CONTENT_TYPE, "application/json");
         defaultHeaders.add(HttpHeaderNames.AUTHORIZATION, "Bot " + token);
         defaultHeaders.add(HttpHeaderNames.USER_AGENT, "DiscordBot(https://discord4j.com, v3)");
-        //HttpClient httpClient = HttpClient.create().baseUrl(Routes.BASE_URL).compress(true);
+        HttpClient httpClient = HttpClient.create().baseUrl(Routes.BASE_URL).compress(true);
     	
-    	DiscordWebClient webClient = new DiscordWebClient(HttpClient.create().compress(true),
+    	DiscordWebClient webClient = new DiscordWebClient(httpClient,
     	        ExchangeStrategies.jackson(mapper), token);
 
-    	Router router = new DefaultRouter(webClient, Schedulers.elastic(), Schedulers.elastic());
-
-    	final RestClient restClient = new RestClient(router);
+    	final RestClient restClient = new RestClient(new DefaultRouter(webClient));
 
 
         return restClient.getGatewayService().getGatewayBot().map(GatewayResponse::getShards);
