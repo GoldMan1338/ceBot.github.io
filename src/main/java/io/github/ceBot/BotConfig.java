@@ -85,7 +85,7 @@ public class BotConfig {
                                 .flatMap(BotEvents::onVoiceChannelLeave)).subscribe();
             }
 	
-	//.doOnNext(bot -> client.updatePresence(Presence.online(Activity.watching("for commands!"))))
+	
 	
     private static Mono<Integer> getShardCount(String token) {
     	final ObjectMapper mapper = new ObjectMapper()

@@ -74,7 +74,7 @@ public static void schedule(DiscordClient client) {
     public static String getPrefix(DiscordClient client, Snowflake guildId) {
         //TODO add support for changing prefix later
         if (System.getenv().containsKey("PREFIX")) return System.getenv("PREFIX");
-        return ",";
+        return ">>";
     }
 	
 	public static final ObjectMapper mapper = new ObjectMapper();
