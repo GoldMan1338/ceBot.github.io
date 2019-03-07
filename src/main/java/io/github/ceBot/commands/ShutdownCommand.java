@@ -21,16 +21,20 @@ public class ShutdownCommand extends Command {
 
     @Override
     public Set<String> getNames() {
-        return Stream.of("shutdown", "cease").collect(Collectors.toSet());
+        return Stream.of("shutdown", "cease", "goaway").collect(Collectors.toSet());
     }
 
     @Override
     protected Mono<Message> run(MessageCreateEvent event, String[] args) {
-    	if(Main.ownerIds.contains(event.getMessage().getAuthor().map(User::getId).map(Snowflake::asLong).orElse(0l)) == true) {
-    	return event.getMessage().getChannel().flatMap(c -> sendMessage("Ceasing to exist", c)).doOnNext(bot -> bot.getClient().logout());
+    	if(Main.ownerIds.contains(event.getMessage().getAuthor().map(User::getId).map(Snowflake::asLong).orElse(0l))) {
+    	return event.getMessage().getChannel()
+    			.flatMap(c -> sendMessage("Ceasing to exist", c))
+    			.doOnNext(bot -> bot.getClient().logout().subscribe());
     	}
     	else {
-		return event.getMessage().getChannel().flatMap(c -> sendMessage("Insufficient permissions.", c));
+		return event.getMessage().getChannel()
+				.flatMap(c -> sendMessage("Insufficient permissions.", c));
+    	
     	}
     }
 
