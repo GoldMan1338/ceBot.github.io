@@ -49,7 +49,7 @@ public class BotConfig {
 				.then();
 	}
 	static Flux<DiscordClient> login(boolean registerEvents){
-		DiscordClientBuilder builder = new DiscordClientBuilder("TOKEN")
+		DiscordClientBuilder builder = new DiscordClientBuilder(System.getenv("TOKEN"))
 				.setInitialPresence(Presence.doNotDisturb(Activity.playing("the loading game")));
 		return getShardCount(builder.getToken())
                 .flatMapMany(shardCount -> Flux.range(0, shardCount)
@@ -90,7 +90,7 @@ public class BotConfig {
     private static Mono<Integer> getShardCount(String token) {
     	final ObjectMapper mapper = new ObjectMapper()
     	        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-    	        .addHandler(new UnknownPropertyHandler(false))
+    	        .addHandler(new UnknownPropertyHandler(true))
     	        .registerModules(new PossibleModule(), new Jdk8Module());
 
     	HttpHeaders defaultHeaders = new DefaultHttpHeaders();
@@ -102,7 +102,9 @@ public class BotConfig {
     	DiscordWebClient webClient = new DiscordWebClient(httpClient,
     	        ExchangeStrategies.jackson(mapper), token);
 
-    	final RestClient restClient = new RestClient(new DefaultRouter(webClient));
+    	Router router = new DefaultRouter(webClient, Schedulers.elastic(), Schedulers.elastic());
+
+    	final RestClient restClient = new RestClient(router);
 
 
         return restClient.getGatewayService().getGatewayBot().map(GatewayResponse::getShards);
