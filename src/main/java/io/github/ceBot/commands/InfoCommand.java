@@ -30,9 +30,9 @@ public class InfoCommand extends Command {
     protected Mono<Message> run(MessageCreateEvent event, String[] args) {
         Consumer<EmbedCreateSpec> spec = embed -> {
             embed.setAuthor("Information", null, null);
-            embed.setDescription("This bot is built with [Spring Boot](https://spring.io/projects/spring-boot). It is coded in Java using the [Discord4J](https://github.com/Discord4J/Discord4J) library.");
-            embed.addField("Author", "SizableShrimp", true);
-            embed.addField("Discord4J Version", "v3-SNAPSHOT", true);
+            embed.setDescription("");
+            embed.addField("Author", "", true);
+            embed.addField("Discord4J Version", "3.0.0", true);
             //currently broken with latest v3 commit
             //embed.addField("Discord4J Version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION), true);
             embed.addField("Prefix", Main.getPrefix(event.getClient(), event.getGuildId().get()), false);

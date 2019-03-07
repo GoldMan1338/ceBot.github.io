@@ -68,6 +68,9 @@ public class BotConfig {
 	
 	private static void registerEvents(DiscordClient client) {
         EventDispatcher dispatcher = client.getEventDispatcher();
+        client.getEventDispatcher().on(ReadyEvent.class)
+        		.doOnNext(bot -> bot.getClient().updatePresence(Presence.online(Activity.watching("for commands!"))))
+        		.subscribe();
         Mono.when(
                 dispatcher.on(MessageCreateEvent.class)
                         .filterWhen(e -> e.getMessage().getChannel().map(c -> c.getType() == Channel.Type.GUILD_TEXT))
@@ -77,9 +80,10 @@ public class BotConfig {
                 dispatcher.on(ReadyEvent.class)
                         .take(1)
                         .filter(ignored -> client.getConfig().getShardIndex() == 0) //only want to schedule once
+                        
                         .doOnNext(ignored -> Main.setFirstOnline(System.currentTimeMillis())) //set the first online time on ready event of shard 0
                         .doOnNext(ignored -> Main.schedule(client))
-                        .doOnNext(bot -> bot.getClient().updatePresence(Presence.online(Activity.watching("for commands!")))),
+        				,
                 dispatcher.on(VoiceStateUpdateEvent.class)
                                 .filter(event -> event.getClient().getSelfId()
                                         .map(id -> !id.equals(event.getCurrent().getUserId()))
