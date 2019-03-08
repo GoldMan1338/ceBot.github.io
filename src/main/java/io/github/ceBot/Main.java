@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.EventDispatcher;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
@@ -40,9 +41,7 @@ public class Main {
 public static void main(String[] args){
     SpringApplication.run(Main.class, args);
     BotConfig.login().block();
-    
 }
-	
 
 public static void schedule(DiscordClient client) {
 	BotYoutube.schedule(client);
@@ -73,6 +72,7 @@ public static void schedule(DiscordClient client) {
 
     public static String getPrefix(DiscordClient client, Snowflake guildId) {
         //TODO add support for changing prefix later
+    	client.updatePresence(Presence.online(Activity.watching("for commands!")));
         if (System.getenv().containsKey("PREFIX")) return System.getenv("PREFIX");
         return ",";
     }

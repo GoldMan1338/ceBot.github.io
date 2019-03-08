@@ -12,7 +12,7 @@ public class HeyCommand extends Command {
     @Override
     public CommandInfo getInfo() {
         return new CommandInfo("%cmdname%",
-                "A small command used to say hello to the bot.");
+                "Saying hello is a good gesture.");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.ceBot;
 
+import java.time.Duration;
 import java.util.function.Consumer;
 
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.rest.RestClient;
@@ -57,9 +59,9 @@ public class BotConfig {
                 .flatMapMany(shardCount -> Flux.range(0, shardCount)
                         .map(i -> builder.setShardIndex(i).build())
                         .doOnNext(client -> {
-                            if (registerEvents) registerEvents(client);
-                        })
-                        
+                            if (registerEvents)
+                            	registerEvents(client);
+                        }) 
                 );
 	}
 	
@@ -68,7 +70,7 @@ public class BotConfig {
 
 	
 	
-	private static void registerEvents(DiscordClient client) {
+	public static void registerEvents(DiscordClient client) {
         EventDispatcher dispatcher = client.getEventDispatcher();
         Mono.when(
                 dispatcher.on(MessageCreateEvent.class)
@@ -79,10 +81,11 @@ public class BotConfig {
                 dispatcher.on(ReadyEvent.class)
                         .take(1)
                         .filter(ignored -> client.getConfig().getShardIndex() == 0) //only want to schedule once
-                        
+                        .zipWith(Mono.delay(Duration.ofSeconds(4)))
+                    	.flatMap(e -> client.updatePresence(Presence.online(Activity.watching("for commands!"))))
                         .doOnNext(ignored -> Main.setFirstOnline(System.currentTimeMillis())) //set the first online time on ready event of shard 0
                         .doOnNext(ignored -> Main.schedule(client))
-                        .doOnNext(bot -> bot.getClient().updatePresence(Presence.online(Activity.watching("for commands!"))))
+                        
         				,
                 dispatcher.on(VoiceStateUpdateEvent.class)
                                 .filter(event -> event.getClient().getSelfId()

@@ -1,6 +1,7 @@
 package io.github.ceBot;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,13 +10,20 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
+import com.google.common.eventbus.Subscribe;
+
+import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.VoiceState;
+import discord4j.core.object.presence.Activity;
+import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
 import io.github.ceBot.commands.Command;
 import io.github.ceBot.music.Music;
 import javassist.Modifier;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class BotEvents {
@@ -38,7 +46,6 @@ public class BotEvents {
 			}
         }
     }
-			
 			
 		    static Mono<?> onMessageCreate(MessageCreateEvent event) {
 		        if (!event.getMessage().getContent().isPresent() || !event.getMessage().getAuthor().isPresent())
