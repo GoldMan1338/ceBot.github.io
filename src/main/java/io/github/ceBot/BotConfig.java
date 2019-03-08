@@ -70,7 +70,7 @@ public class BotConfig {
 
 	
 	
-	public static void registerEvents(DiscordClient client) {
+	private static void registerEvents(DiscordClient client) {
         EventDispatcher dispatcher = client.getEventDispatcher();
         Mono.when(
                 dispatcher.on(MessageCreateEvent.class)

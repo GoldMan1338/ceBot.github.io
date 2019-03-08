@@ -72,7 +72,6 @@ public static void schedule(DiscordClient client) {
 
     public static String getPrefix(DiscordClient client, Snowflake guildId) {
         //TODO add support for changing prefix later
-    	client.updatePresence(Presence.online(Activity.watching("for commands!")));
         if (System.getenv().containsKey("PREFIX")) return System.getenv("PREFIX");
         return ",";
     }
