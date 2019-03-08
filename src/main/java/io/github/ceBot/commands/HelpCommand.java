@@ -69,7 +69,7 @@ public class HelpCommand extends Command {
                 .stream()
                 .flatMap(cmd -> cmd.getNames().stream())
                 .collect(Collectors.toList());
-        aliases.add("io.github.ceBot.music");
+        aliases.add("music");
         String commandNames = String.join(", ", aliases);
         Consumer<EmbedCreateSpec> spec = display(event, "help", "Help", getInfo())
                 .andThen(embed -> embed.addField("Commands", commandNames, false));

@@ -18,7 +18,7 @@ public class InfoCommand extends Command {
     @Override
     public CommandInfo getInfo() {
         return new CommandInfo("%cmdname%",
-                "Display information about the bot including uptime, author, and how the bot was made.");
+                "Display information about the bot including uptime, author, and other sutdf");
     }
 
     @Override
@@ -30,13 +30,12 @@ public class InfoCommand extends Command {
     protected Mono<Message> run(MessageCreateEvent event, String[] args) {
         Consumer<EmbedCreateSpec> spec = embed -> {
             embed.setAuthor("Information", null, null);
-            embed.setDescription("");
-            embed.addField("Author", "", true);
+            embed.setDescription("Legit doesn't really do much yet so dont get too excited");
+            embed.addField("Author", "CnE", true);
             embed.addField("Discord4J Version", "3.0.0", true);
-            //currently broken with latest v3 commit
-            //embed.addField("Discord4J Version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION), true);
             embed.addField("Prefix", Main.getPrefix(event.getClient(), event.getGuildId().get()), false);
-            embed.addField("Uptime", getUptime(), false);
+            embed.addField("Uptime", getUptime(), true);
+            embed.setThumbnail("https://i.imgur.com/ZUN3VwM.png");
         };
         return event.getMessage().getChannel()
                 .flatMap(c -> c.createMessage(m -> m

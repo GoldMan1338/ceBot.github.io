@@ -29,7 +29,8 @@ public class ShutdownCommand extends Command {
     	if(Main.ownerIds.contains(event.getMessage().getAuthor().map(User::getId).map(Snowflake::asLong).orElse(0l))) {
     	return event.getMessage().getChannel()
     			.flatMap(c -> sendMessage("Ceasing to exist", c))
-    			.doOnNext(bot -> bot.getClient().logout().subscribe());
+    			.doOnNext(bot -> bot.getClient().logout().subscribe(e -> 
+    			System.exit(0)));
     	}
     	else {
 		return event.getMessage().getChannel()
