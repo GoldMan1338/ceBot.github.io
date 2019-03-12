@@ -103,12 +103,12 @@ public class Music {
         lockedGuilds.remove(guildId);
     }
 
-    public static class LavaplayerAudioProvider extends AudioProvider {
+    public static class LavaPlayerAudioProvider extends AudioProvider {
 
         private final AudioPlayer player;
         private final MutableAudioFrame frame = new MutableAudioFrame();
 
-        public LavaplayerAudioProvider(AudioPlayer player) {
+        public LavaPlayerAudioProvider(AudioPlayer player) {
             super(ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize()));
             this.player = player;
             this.frame.setBuffer(getBuffer());

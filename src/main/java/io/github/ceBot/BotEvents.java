@@ -48,14 +48,9 @@ public class BotEvents {
     }
 			
 		    static Mono<?> onMessageCreate(MessageCreateEvent event) {
-		        if (!event.getMessage().getContent().isPresent() || !event.getMessage().getAuthor().isPresent())
-		            return Mono.empty();
 		        String prefix = Main.getPrefix(event.getClient(), event.getGuildId().get());
-		        Command command = null;
-		        if (event.getMessage().getContent().get().startsWith(prefix)) {
-		            String commandName = BotUtils.getCommandName(event.getMessage());
-		            command = names.get(commandName);
-		        }
+		        String commandName = BotUtils.getCommandName(event.getMessage(), prefix);
+		        Command command = names.get(commandName);
 		        if (command == null) {
 		            command = commands.stream()
 		                    .filter(cmd -> cmd.isCommand(event.getMessage()))

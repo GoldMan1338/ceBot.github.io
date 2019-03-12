@@ -2,6 +2,8 @@ package io.github.ceBot;
 
 import java.time.Duration;
 import java.util.function.Consumer;
+import java.util.Set;
+import java.util.EnumSet;
 
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +21,12 @@ import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+import discord4j.core.object.util.Permission;
+import discord4j.core.shard.ShardingClientBuilder;
 import discord4j.rest.RestClient;
 import discord4j.rest.http.ExchangeStrategies;
 import discord4j.rest.http.client.DiscordWebClient;
@@ -37,7 +42,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.http.client.HttpClient;
 
-public class BotConfig {
+class BotConfig {
 	
 	private BotConfig() {}
 	
@@ -53,7 +58,15 @@ public class BotConfig {
 				.then();
 	}
 	static Flux<DiscordClient> login(boolean registerEvents){
-		DiscordClientBuilder builder = new DiscordClientBuilder(System.getenv("TOKEN"))
+		return new ShardingClientBuilder(System.getenv("TOKEN"))
+				.build()
+				.map(shard -> shard.setEventScheduler(Schedulers.immediate())
+						.setInitialPresence(Presence.doNotDisturb(Activity.playing("the loading game"))))
+				.map(DiscordClientBuilder::build)
+				.doOnNext(client -> {
+					if (registerEvents) registerEvents(client);
+				});
+		/*DiscordClientBuilder builder = new DiscordClientBuilder(System.getenv("TOKEN"))
 				.setInitialPresence(Presence.doNotDisturb(Activity.playing("the loading game")));
 		return getShardCount(builder.getToken())
                 .flatMapMany(shardCount -> Flux.range(0, shardCount)
@@ -62,7 +75,7 @@ public class BotConfig {
                             if (registerEvents)
                             	registerEvents(client);
                         }) 
-                );
+                );*/
 	}
 	
 
@@ -75,6 +88,8 @@ public class BotConfig {
         Mono.when(
                 dispatcher.on(MessageCreateEvent.class)
                         .filterWhen(e -> e.getMessage().getChannel().map(c -> c.getType() == Channel.Type.GUILD_TEXT))
+                        .filterWhen(e -> e.getMessage().getChannel().cast(TextChannel.class)
+                        		.flatMap(c -> Mono.justOrEmpty(client.getSelfId()).flatMap(c::getEffectivePermissions).map(set -> set.asEnumSet().contains(Permission.SEND_MESSAGES))))
                         .filter(e -> e.getMessage().getAuthor().map(u -> !u.isBot()).orElse(false))
                         .flatMap(BotEvents::onMessageCreate)
                         .onErrorContinue((error, event) -> LoggerFactory.getLogger(Main.class).error("Event listener had an uncaught exception!", error)),
@@ -93,31 +108,4 @@ public class BotConfig {
                                         .orElse(false)) //don't want bot user
                                 .flatMap(BotEvents::onVoiceChannelLeave)).subscribe();
             }
-	
-	
-	
-    private static Mono<Integer> getShardCount(String token) {
-    	final ObjectMapper mapper = new ObjectMapper()
-    	        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-    	        .addHandler(new UnknownPropertyHandler(true))
-    	        .registerModules(new PossibleModule(), new Jdk8Module());
-
-    	HttpHeaders defaultHeaders = new DefaultHttpHeaders();
-        defaultHeaders.add(HttpHeaderNames.CONTENT_TYPE, "application/json");
-        defaultHeaders.add(HttpHeaderNames.AUTHORIZATION, "Bot " + token);
-        defaultHeaders.add(HttpHeaderNames.USER_AGENT, "DiscordBot(https://discord4j.com, v3)");
-        HttpClient httpClient = HttpClient.create().baseUrl(Routes.BASE_URL).compress(true);
-    	
-    	DiscordWebClient webClient = new DiscordWebClient(httpClient,
-    	        ExchangeStrategies.jackson(mapper), token);
-
-    	Router router = new DefaultRouter(webClient, Schedulers.elastic(), Schedulers.elastic());
-
-    	final RestClient restClient = new RestClient(router);
-
-
-        return restClient.getGatewayService().getGatewayBot().map(GatewayResponse::getShards);
-    }
-
-
 }

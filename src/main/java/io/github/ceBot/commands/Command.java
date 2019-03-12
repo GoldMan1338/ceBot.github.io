@@ -58,4 +58,8 @@ public abstract class Command {
     protected static Mono<Message> sendEmbed(Consumer<? super EmbedCreateSpec> spec, MessageChannel channel) {
         return BotUtils.sendEmbed(spec, channel);
     }
+    static Mono<Void> deleteLater(int seconds, Message... messages) {
+    	Mono<Void> delete = Flux.just(messages).flatMap(Message::delete).then();
+		return Mono.delay(Duration.ofSeconds(seconds)).then(delete	);
+    }
 }

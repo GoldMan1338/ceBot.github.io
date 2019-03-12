@@ -42,7 +42,8 @@ public class HelpCommand extends Command {
     }
 
     public static Consumer<EmbedCreateSpec> display(MessageCreateEvent event, Command command) {
-        return display(event, BotUtils.getCommandName(event.getMessage()), command);
+        return display(event, BotUtils.getCommandName(event.getMessage(),
+        		event.getGuildId().get()), command);
     }
 
     public static Consumer<EmbedCreateSpec> display(MessageCreateEvent event, String inputCmd, Command command) {
@@ -57,7 +58,7 @@ public class HelpCommand extends Command {
         String title = commandName + " Command";
 
         return embed -> {
-            embed.setColor(new Color(255, 175, 175));
+            embed.setColor(new Color(42, 100, 74));
             embed.setAuthor(title, null, null);
             embed.addField("Usage", "`" + usage + "`", false);
             embed.addField("Description", description, false);
@@ -69,7 +70,6 @@ public class HelpCommand extends Command {
                 .stream()
                 .flatMap(cmd -> cmd.getNames().stream())
                 .collect(Collectors.toList());
-        aliases.add("music");
         String commandNames = String.join(", ", aliases);
         Consumer<EmbedCreateSpec> spec = display(event, "help", "Help", getInfo())
                 .andThen(embed -> embed.addField("Commands", commandNames, false));

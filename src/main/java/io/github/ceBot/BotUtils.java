@@ -27,10 +27,15 @@ public class BotUtils {
         return channel.createMessage(message -> message.setEmbed(spec));
     }
 	//2 character prefix btw, itll be ">>"
-	public static String getCommandName(Message message) {
-		String content = message.getContent().orElse("");
-		if(content.isEmpty()) return "";
-		return content.substring(2).split(" ")[0].toLowerCase();
+	public static String getCommandName(Message message, Snowflake guildId) {
+		String prefix = Main.getPrefix(message.getClient(), guildId);
+		return getCommandName(message, prefix);
+	}
+	public static String getCommandName(Message message, String prefix) {
+		return message.getContent()
+				.filter(content -> content.startsWith(prefix))
+				.map(content -> content.substring(prefix.length()).split(" ")[0].toLowerCase())
+				.orElse("");
 	}
 	
 	public static Mono<Boolean> isBotInVoiceChannel(DiscordClient client, Snowflake voiceChannelId) {
