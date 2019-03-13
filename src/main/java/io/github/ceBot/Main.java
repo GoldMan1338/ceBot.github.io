@@ -86,7 +86,7 @@ public static void schedule(DiscordClient client) {
 	
 	public static String[] BOT_OWNER = {"139541886888181760","422588424487174144","195621535703105536"};
 	
-	public static Set<Long> ownerIds = Stream.of(139541886888181760l,422588424487174144l,195621535703105536l).collect(Collectors.toSet());
+	public static Set<Long> ownerIds = Stream.of(139541886888181760l,422588424487174144l).collect(Collectors.toSet());
 	
 	public static String BOT_INVITE = "https://discordapp.com/oauth2/authorize?client_id=542137435681718273&scope=bot&permissions=8";
 	
