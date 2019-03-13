@@ -13,8 +13,7 @@ public class InviteCommand extends Command {
 
 	@Override
 	public CommandInfo getInfo() {
-		return new CommandInfo("%module%",
-				"%cmdname%",
+		return new CommandInfo("%cmdname%",
 				"Provides an invitation link for the bot");
 	}
 
