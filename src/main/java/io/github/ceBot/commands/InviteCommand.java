@@ -27,4 +27,14 @@ public class InviteCommand extends Command {
 	protected Mono<Message> run(MessageCreateEvent event, String[] args) {
 		return event.getMessage().getChannel().flatMap(c -> sendMessage(Main.BOT_INVITE.toString(), c));
 	}
+	
+	
+	
+	/*
+	 * This is for a future update
+	 * Ignore it
+	@Override
+	public Set<String> getModuleNames() {
+		return Stream.of("General").collect(Collectors.toSet());
+	}*/
 }
