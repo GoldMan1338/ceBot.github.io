@@ -36,7 +36,7 @@ public class Tracks extends AudioEventAdapter {
         boolean isPlaying = player.startTrack(track, true);
         if (!isPlaying) {
             queue.offer(track);
-            return BotUtils.sendMessage("`" + track.getInfo().title + "` added to queue.\n" + track.getInfo().uri + "", channel);
+            return BotUtils.sendMessage("`" + track.getInfo().title + " " + track.getDuration() + "` added to queue.\n" + track.getInfo().uri + "", channel);
         } else {
             return BotUtils.sendMessage("Now playing `" + track.getInfo().title + "`\n" + track.getInfo().uri, channel);
         }

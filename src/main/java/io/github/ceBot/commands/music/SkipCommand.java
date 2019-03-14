@@ -25,7 +25,8 @@ public class SkipCommand extends MusicCommandUtil {
 
 	@Override
 	public  CommandInfo getInfo() {
-		return new CommandInfo("%cmdname%",
+		return new CommandInfo(
+				"%cmdname%",
 				"DJ - Force bot to skip current song and play next in queue" + 
 				"ALONE - Bot will skip current song and play next in queue" +
 				"NONE - Request that the current track be skipped (majority vote)");
@@ -42,7 +43,7 @@ public class SkipCommand extends MusicCommandUtil {
 				.flatMap(c -> hasPermission(event, false)
 						.filter(hasPermission -> hasPermission)
 						.doOnNext(b -> Music.skipTrack(event.getClient(),  event.getGuildId().get()))
-						.flatMap(b -> sendMessage("Song skipped <:547261342000742410:>", c))
+						.flatMap(b -> sendMessage("Song skipped <:babylaugh:547261342000742410>", c))
 						.switchIfEmpty(voteSkip(event.getMember().get(), c)));
 	}
 	
@@ -61,8 +62,10 @@ public class SkipCommand extends MusicCommandUtil {
 		return majority
 				.filter(maj -> musicManager.usersSkipping.size() >= maj)
 				.doOnNext(ignored -> Music.skipTrack(member.getClient(), channel.getGuildId()))
-				.flatMap(ignored -> BotUtils.sendMessage("Majority rules, song skipped <:547261342000742410:>", channel))
+				.flatMap(ignored -> BotUtils.sendMessage("Majority rules, song skipped <:babylaugh:547261342000742410>", channel))
 				.switchIfEmpty(added);
 	}
+
+	
 
 }
