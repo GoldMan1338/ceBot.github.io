@@ -16,7 +16,7 @@ import io.github.ceBot.*;
 
 public class Main {
 	
-	public final static DiscordClientBuilder builder = new DiscordClientBuilder("NTQyMTM3NDM1NjgxNzE4Mjcz.Dzp-hA.sSAi0DTA9rcprC3VKTLKHxLHdAU");
+	public final static DiscordClientBuilder builder = new DiscordClientBuilder("*bot token removed*");
 	public final static DiscordClient client = builder.build();
 	
 	public static void main(String[] args) throws ClassNotFoundException {
